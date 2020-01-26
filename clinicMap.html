@@ -1,0 +1,138 @@
+﻿<html>
+<head>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <title>SheCares Finds</title>
+    <link rel="stylesheet" href="main.css">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+         /* Always set the map height explicitly to define the size of the div
+        * element that contains the map. */
+         #map {
+             height: 100%;
+         }
+         /* Optional: Makes the sample page fill the window. */
+         html, body {
+             height: 100%;
+             margin: 0;
+             padding: 0;
+         }
+    </style>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.7.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.7.0/firebase-firestore.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+         https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.7.0/firebase-analytics.js"></script>
+
+
+    <script>
+
+        var firebaseConfig = {
+            apiKey: "AIzaSyDuQmkeFBbPnE9wUEkzJMquMnK4fKPrLP8",
+            authDomain: "women-s-health-796b7.firebaseapp.com",
+            databaseURL: "https://women-s-health-796b7.firebaseio.com",
+            projectId: "women-s-health-796b7",
+            storageBucket: "women-s-health-796b7.appspot.com",
+            messagingSenderId: "263976087961",
+            appId: "1:263976087961:web:34a70efdd68c9cc9272308",
+            measurementId: "G-ED7RHVBVKH"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        firebase.analytics();
+
+        // create object
+        const db = firebase.firestore();
+
+        // This example requires the Places library. Include the libraries=places
+        // parameter when you first load the API. For example:
+        // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
+
+        var map;
+        var service;
+        var infowindow;
+
+
+        function initMap() {
+            var lat;
+            var lng;
+            var myLatLng;
+            var marker;
+            var map;
+            db.collection("TorontoHealthClinics").get().then((querysnapshot) => {
+
+
+
+                const docSnap = querysnapshot.docs;
+
+                map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 11,
+                    center: { lat: querysnapshot.docs[0].get("Latitude"), lng: querysnapshot.docs[0].get("Longitude") }
+                });
+
+                querysnapshot.docs.forEach(doc => {
+                    //alert(doc.get('Product Name'));
+                    lat = doc.get("Latitude");
+                    lng = doc.get("Longitude");
+                    //alert(lat + " " + lng);
+                    myLatLng = { lat: lat, lng: lng };
+
+
+                    marker = new google.maps.Marker({
+                        position: myLatLng,
+                        map: map,
+                        name: doc.get("Name"),
+                        address: doc.get("Address")
+                    });
+
+                    var infowindow = new google.maps.InfoWindow({
+                        content: "<div><b>Name:</b> " + marker.name + "<br>" +
+                            "<b>Address:</b> " + marker.address + "<br></div>"
+
+                    });
+
+                    infowindow.open(map, marker);
+
+                    if (marker) {
+                        google.maps.event.addListener(marker, 'click', function () {
+                            //infowindow.setContent(map, marker.name);
+                            //  map.setCenter(new google.maps.LatLng(marker.position.lat(), marker.position.lng()));
+                            //  marker.setMap(map);
+                            infowindow.open(map);
+                        });
+                    }
+
+                })
+                //alert(marker.name);
+
+            })
+
+        }
+    </script>
+</head>
+<body>
+    <header class="text-center">
+        <img src="Logo.png" height="100" width="137" />
+    </header>
+
+    <div class="jumbotron text-center my-3 bg-primary text-white">
+        <img src="maps-white.png" height="100" width="100" />
+        <h1 id="productTitle">Sexual Health Clinics in the GTA</h1>
+        <p>Search for your needs</p>
+    </div>
+    <div class="text-center">
+        <button id="Home" class="btn btn-light btn-lg" type="button" onClick="location.href = 'index.html'">Return to Home</button>
+    </div>
+    <br />
+    <br />
+    <div id="map"></div>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBayLy9T2hsvVDvMUQJkeF26v_Do09gpYI&libraries=places&callback=initMap" async defer></script>
+</body>
+</html>
+<br />
+<footer class=" text-center bg-light text-brown">
+    <p> ©SheCares 2020 </p>
+</footer>
